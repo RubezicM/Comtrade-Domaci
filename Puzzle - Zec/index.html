@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style type="text/css">
+  body {
+    padding: 40px 0;
+    background-color: #3a403e;
+    box-sizing: border-box;
+  }
+    #okvir {
+      width: 600px;
+      margin: auto;
+      background-color: #444444;
+      height: 317px;
+    }
+    #okvir::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+  .puzzle-cell {
+    outline: 2px dashed red;
+  }
+    #okvir div {
+      width: 120px;
+      height: 79px;
+      float: left;
+      min-height: 79px;
+    }
+
+    #okvir img {
+      width: 120px;
+    }
+    #complete {
+      border: 1px dashed red;
+      width: 600px;
+      display: block;
+      margin: 40px auto;
+    }
+    button {
+      display: block;
+      margin: 30px auto;
+    }
+  
+  </style>
+</head>
+
+<body>
+  <button id="scramble">Scramble</button>
+  <div id="okvir"></div>
+  <img src="zec/a.jpg" alt="Ceo zeka" id='complete'>
+  <script type="text/javascript">
+    // game status
+    var gameStatus; 
+    // test
+    var arr = [3,4,6,7,8];
+    for(var i=0;i < arr.length;i++){
+      
+    }
+    
+    //test
+    const okvir = document.getElementById('okvir');
+    const scramble = document.getElementById("scramble")
+    gameInit();
+    scramble.addEventListener('click',gameInit);
+    
+    
+    okvir.addEventListener('click', function (e) {
+
+      if(gameStatus){
+      var kliknuto = Number(e.target.alt);
+      if (kliknuto > 0) {
+        var prazno_polje = 5;
+        for (i = 1; i <= 20; i++) {
+          if (!document.querySelector('#polje' + i + ' img')) {
+            prazno_polje = i;
+          }
+        }
+        console.log(prazno_polje);
+        
+        var razlika = Math.abs(prazno_polje - kliknuto);
+        var zbir = prazno_polje + kliknuto;
+        console.log('razlika', razlika);
+        if ((razlika == 1 || razlika == 5) &&
+          (!(razlika == 1 && zbir === 11)) &&
+          (!(razlika == 1 && zbir === 21)) &&
+          (!(razlika == 1 && zbir === 31)) 
+        ) {
+          console.log(document.getElementById('polje' + prazno_polje));
+          document.getElementById('polje' + prazno_polje).innerHTML =
+            document.getElementById('polje' + kliknuto).innerHTML;
+
+          document.getElementById('polje' + kliknuto).innerHTML = '';
+          document.querySelector('#polje' + prazno_polje + ' img').alt = prazno_polje;
+        }
+      }
+      // Uslov za kraj
+      
+      check(gameStatus);
+      }
+ 
+    });
+
+        // Funkcija proverava da li pri svakom kliku je ispunjen uslov, da li je data-value slike jedan id-u diva
+
+    function check(bool){
+     
+      var divs = Array.from(okvir.children);
+      var complete = [];
+ 
+      for(var i=0;i < divs.length;i++){
+
+        
+          // Ako nije prazan div/ako ima sliku unutar njega
+          if(!(divs[i].innerHTML == "")){
+          
+          // Uzimamo ID diva
+
+          var id_ =  divs[i].id;
+
+          // Brisemo pocetak stringa(polje) da bi nam ostao samo broj
+          var id1 = id_.slice(5);
+
+          // uzimamo sliku unutar diva
+          var img = divs[i].firstChild;
+          // data-value vrednost slike treba da bude jednaka id-u diva
+          var data = img.getAttribute('data-value');
+          if(id1===data){
+            // Dajemo outline zelen divu
+            divs[i].style.outline = '2px dashed green';
+
+            // Stavljamo data-value slike unutar arraya
+            complete.push(img.getAttribute('data-value'));
+          } else {
+            divs[i].style.outline = '2px dashed red';
+          }
+          if(complete.length === 19){
+            alert('Congrats!');
+
+            // Gasimo klik event
+            bool = false;
+          } 
+          
+        } 
+      }
+    };
+  function gameInit(){
+    var ispis = '';
+    okvir.innerHTML = "";
+    gameStatus = true;
+    
+    // Niz koji stavlja sve random brojeve
+    var randomArray = [];
+    
+    // Petlja za random brojeve koja ispisuje od 2 do 19
+    while (randomArray.length < 20){
+      var randomBr =  Math.ceil(Math.random() * 20);
+      
+      // Proveravamo da li je random broj u nizu, ako nije onda ga stavljamo
+      if(randomArray.indexOf(randomBr) == -1){
+        randomArray.push(randomBr);
+      }
+    }
+    console.log(randomArray);
+    
+    
+  
+    for (i = 0,b = 0; i < 20; i++,b++) {
+      if(randomArray[i] === 1){
+        ispis += `<div id="polje${i+1}"></div>`;
+        var index = randomArray.indexOf(1);
+        randomArray.splice(index,1);
+        b--;
+      }else{
+        ispis += `<div id="polje${i+1}" class="puzzle-cell"><img src="zec/${randomArray[b]}.jpg" alt="${i+1}" data-value="${randomArray[b]}"></div>`;
+      }
+    }
+    okvir.innerHTML = ispis;
+    console.log(randomArray);
+    check();
+  }
+  </script>
+</body>
+
+</html>
